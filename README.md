@@ -1,6 +1,7 @@
 # boorufetch-py
 A neofetch wrapper that scraps a image from gelbooru
 
+![I use Arch BTW](https://user-images.githubusercontent.com/30930688/218849072-12a7a017-2da2-4be3-8da0-b149a911549b.png)
 ### How it started
 ```
 Well, this is not the first project. I remade what was discontinued for fun.
