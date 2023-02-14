@@ -12,6 +12,10 @@ Well, this is not the first project. I remade what was discontinued for fun.
 * Image is saved on a temporary file that gets purged after neofetch is executed
 
 ### How to use 
+```py 
+$ python3 -m pip install -r requirements.txt
+```
+
 ```
 $ python3 boorufetch.py 
 
