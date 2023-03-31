@@ -24,7 +24,7 @@ $ boorufetch --help
 
 $ boorufetch --backend kitty
 
-$ boorufetch --tag X
+$ boorufetch --tags X
 
 $ boorufetch --tags X,Y
 
