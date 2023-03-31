@@ -22,8 +22,6 @@ $ boorufetch
 
 $ boorufetch --help
 
-$ boorufetch --backend kitty
-
 $ boorufetch --tags X
 
 $ boorufetch --tags X,Y
@@ -36,9 +34,8 @@ You can also use - instead of --
 ----
 
 == Notes
-* Make sure your neofetch and images work first by running `neofetch --source image`
+* Make sure your neofetch is configured with the right backend and images work by running `neofetch --source image`
 * The project was made entirely for fun
-* nsfw is "off" by default, blame the artist if the art does not look safe enough
 
 == LICENSE
 This project is signed under LGPLv3
