@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Any
 from bs4 import BeautifulSoup
-from requests import get as gets
+from requests import Response, get as gets
 from random import choice
 from urllib.request import Request, urlopen
 from subprocess import run
@@ -28,7 +28,10 @@ import tempfile as tmpf
 import argparse
 
 
-def gather_links(soup: BeautifulSoup) -> list[str]:
+def gather_sauce(soup: BeautifulSoup) -> list[str]:
+    """
+    Meet the Scout.
+    """
     links: list[str] = []
     for a in soup.find_all("a"):
         link = a.get("href")
@@ -39,19 +42,24 @@ def gather_links(soup: BeautifulSoup) -> list[str]:
 
 
 def get_main_image(soup: BeautifulSoup) -> str:
+    """
+    returns: str
+    """
     imgs: list[str] = []
     for img in soup.find_all("img", src=True):
         link = img.get("src")
         if link is not None:
             if "https" in link:
                 imgs.append(link)
-    # TODO: Sometimes it gathers a thumbnail instead of the main image,
-    # it needs better filtering
     return imgs[2]
 
 
-# TODO: multiple use of --tag does not work
-def tag_handler(args: dict[str, Any]) -> str:
+def make_sauce(args: dict[str, Any]) -> str:
+    """
+    Let the man cook
+
+    returns: str
+    """
     link: str = "https://gelbooru.com/index.php?page=post&s=list&tags="
 
     nsfw: str = args["nsfw"]
@@ -60,63 +68,54 @@ def tag_handler(args: dict[str, Any]) -> str:
     else:
         # default
         link += "rating%3ageneral"
-    tag: str | None = args["tag"]
-    if tag is not None:
-        link += f"+{tag}"
 
-    if args["tags"] is not None:
-        tags: str = args["tags"]
+    if args["tag"] is not None:
+        tags: str = args["tag"]
         for tag in tags.split(","):
             link += f"+{tag}"
+
     return link
 
 
-def main() -> None:
+def parse_flags() -> dict[str, Any]:
+    """
+    returns: {str: Any}
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--nsfw",
         help="fallen to the dark side, You have.",
         choices=["on", "off"],
     )
+
     parser.add_argument(
-        "--tag", help="runs with specific tag\n Example: --tags X", type=str
-    )
-    parser.add_argument(
-        "--tags",
-        help="same as tag but looks into more details\n Example: --tags X,Y,Z",
+        "--tag",
+        help="same as tag but looks into more details\n Example: --tag X,Y,Z",
         type=str,
     )
 
-    parser.add_argument(
-        "--backend",
-        help="backend engine for neofetch",
-        type=str,
-    )
+    return vars(parser.parse_args())
 
-    args = vars(parser.parse_args())
-    url: str = tag_handler(args)
-    backend = args["backend"]
 
-    response = gets(url)
+def main() -> None:
+    args: dict[str, Any] = parse_flags()
+
+    url: str = make_sauce(args)
+    response: Response = gets(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
-    images: list[str] = gather_links(soup)
+    images: list[str] = gather_sauce(soup)
     sauce: str = choice(images)
     response = gets(sauce)
     soup = BeautifulSoup(response.content, "html.parser")
 
-    image_link = get_main_image(soup)
-
     with tmpf.NamedTemporaryFile() as f:
         request_site = Request(
-            image_link, headers={"User-Agent": "Mozilla/5.0"}
+            get_main_image(soup), headers={"User-Agent": "Mozilla/5.0"}
         )
         webpage = urlopen(request_site).read()
         f.write(webpage)
-        if backend is None:
-            run(["neofetch", "--source", f.name])
-        else:
-            run(["neofetch", "--backend", backend, "--source", f.name])
+        run(["neofetch", "--source", f.name])
 
 
 if __name__ == "__main__":
