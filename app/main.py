@@ -69,10 +69,9 @@ def make_sauce(args: dict[str, Any]) -> str:
         # default
         link += "rating%3ageneral"
 
-    if args["tag"] is not None:
-        tags: str = args["tag"]
-        for tag in tags.split(","):
-            link += f"+{tag}"
+    tags = args.get("tag")
+    if tags:
+        link += "".join([f"+{tag}" for tag in tags.split(",")])
 
     return link
 
@@ -101,6 +100,7 @@ def main() -> None:
     args: dict[str, Any] = parse_flags()
 
     url: str = make_sauce(args)
+
     response: Response = gets(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
