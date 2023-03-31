@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from typing import Any
 from bs4 import BeautifulSoup
 from requests import get as gets
-from random import randrange
+from random import choice
 from urllib.request import Request, urlopen
 from subprocess import run
 
@@ -101,7 +101,7 @@ def main() -> None:
     soup = BeautifulSoup(response.content, "html.parser")
 
     images: list[str] = gather_links(soup)
-    sauce: str = images[randrange(start=0, stop=len(images))]
+    sauce: str = choice(images)
     response = gets(sauce)
     soup = BeautifulSoup(response.content, "html.parser")
 
